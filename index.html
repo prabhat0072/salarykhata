@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalaryKhata — In-Hand Salary, HRA & Income Tax Calculator (FY 2025-26)</title>
+<meta name="description" content="Free CTC to in-hand salary calculator, HRA exemption calculator, and income tax calculator for FY 2025-26 (old vs new regime). Built for Indian salaried employees.">
+<meta name="keywords" content="in hand salary calculator, CTC calculator India, HRA exemption calculator, income tax calculator FY 2025-26, SIP calculator, EMI calculator">
+<meta property="og:title" content="SalaryKhata — In-Hand Salary, HRA, Tax, SIP & EMI Calculator">
+<meta property="og:description" content="CTC ko in-hand salary mein convert karo, HRA exemption nikalo, aur FY 2025-26 ke naye tax slabs se old vs new regime compare karo — sab free.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SalaryKhata — In-Hand Salary & Tax Calculator">
+<meta name="twitter:description" content="CTC se in-hand salary, HRA exemption, income tax (FY 2025-26), SIP aur EMI — ek hi free tool mein.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101826;
+    --ink-soft:#1b2540;
+    --paper:#ECE7D8;
+    --paper-2:#F5F1E6;
+    --paper-line:#C9C2A8;
+    --text:#1B2230;
+    --muted:#6B6455;
+    --gold:#B8862F;
+    --gold-deep:#8f6a24;
+    --green:#3E6B52;
+    --green-bg:#E4EDE6;
+    --red:#A23B2E;
+    --red-bg:#F3E4E0;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(160,148,112,0.14) 28px),
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(184,134,47,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 20%, rgba(62,107,82,0.07), transparent 55%),
+      var(--paper);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace; font-variant-numeric: tabular-nums;}
+  h1,h2,h3{font-family:'Roboto Slab',serif; margin:0; letter-spacing:-0.01em;}
+  a{color:inherit;}
+
+  /* ===== Header ===== */
+  header.site{
+    background:var(--ink);
+    color:var(--paper-2);
+    padding:18px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky; top:0; z-index:50;
+    border-bottom:3px solid var(--gold);
+  }
+  .brand{display:flex; align-items:baseline; gap:10px;}
+  .brand-mark{
+    width:34px; height:34px; border:2px solid var(--gold);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Roboto Slab',serif; font-weight:700; color:var(--gold); font-size:16px;
+  }
+  .brand-name{font-family:'Roboto Slab',serif; font-weight:700; font-size:20px; letter-spacing:-0.01em;}
+  .brand-tag{font-size:11px; color:#a8a091; font-family:'IBM Plex Mono',monospace; display:none;}
+  nav.tabs{display:flex; gap:4px;}
+  nav.tabs button{
+    background:transparent; border:1px solid transparent; color:#cfc9ba;
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; padding:8px 14px;
+    cursor:pointer; border-radius:2px; transition:color .2s ease, border-color .2s ease, transform .2s ease;
+    position:relative;
+  }
+  nav.tabs button::after{
+    content:""; position:absolute; left:14px; right:14px; bottom:3px; height:1px;
+    background:var(--gold); transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  nav.tabs button:hover{color:#fff; border-color:#3a4560; transform:translateY(-1px);}
+  nav.tabs button:hover::after{transform:scaleX(1);}
+  nav.tabs button.active::after{transform:scaleX(0);}
+  nav.tabs button.active{background:var(--gold); color:var(--ink); font-weight:600;}
+
+  /* ===== Hero / Live Stub ===== */
+  .hero{
+    padding:56px 24px 40px;
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:48px;
+    max-width:1180px; margin:0 auto;
+    align-items:start;
+  }
+  .hero-copy .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--gold-deep);
+    text-transform:uppercase; letter-spacing:.12em; margin-bottom:14px; display:block;
+  }
+  .hero-copy h1{font-size:38px; line-height:1.12; margin-bottom:16px;}
+  .hero-copy p.lead{font-size:16px; color:#4a4438; max-width:46ch; margin-bottom:26px;}
+  .hero-input{margin-bottom:8px;}
+  .hero-input label{display:block; font-size:12.5px; font-family:'IBM Plex Mono',monospace; color:var(--muted); margin-bottom:6px;}
+  .hero-input .field-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .rupee-field{
+    position:relative; flex:1; min-width:180px;
+  }
+  .rupee-field span{position:absolute; left:14px; top:50%; transform:translateY(-50%); font-family:'IBM Plex Mono',monospace; color:var(--muted); font-size:18px;}
+  .rupee-field input{
+    width:100%; padding:14px 14px 14px 32px; font-size:19px;
+    border:1.5px solid var(--paper-line); border-radius:2px; background:#fff;
+    font-family:'IBM Plex Mono',monospace; color:var(--text); font-weight:600;
+  }
+  .rupee-field input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .toggle-pill{display:flex; border:1.5px solid var(--paper-line); border-radius:20px; overflow:hidden; height:48px;}
+  .toggle-pill button{
+    border:none; background:#fff; padding:0 16px; font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+    cursor:pointer; color:var(--muted); transition:background .25s ease, color .25s ease;
+  }
+  .toggle-pill button:hover:not(.active){background:#f2ecd9; color:var(--text);}
+  .toggle-pill button.active{background:var(--ink); color:#fff;}
+  .hero-note{font-size:12px; color:var(--muted); margin-top:10px;}
+
+  /* Payslip stub — signature element */
+  .stub-wrap{position:relative;}
+  .stub{
+    background:var(--paper-2);
+    border:1px solid var(--paper-line);
+    border-radius:4px;
+    padding:26px 26px 20px;
+    box-shadow:0 18px 40px -18px rgba(16,24,38,.35);
+    position:relative;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .stub:hover{transform:translateY(-4px); box-shadow:0 26px 50px -18px rgba(16,24,38,.42);}
+  .stub::before, .stub::after{
+    content:""; position:absolute; width:18px; height:18px; background:var(--paper);
+    border-radius:50%; top:50%; transform:translateY(-50%);
+  }
+  .stub::before{left:-9px;}
+  .stub::after{right:-9px;}
+  .stub-perf{
+    position:absolute; left:0; right:0; top:64px; height:0;
+    border-top:2px dashed var(--paper-line);
+  }
+  .stub-head{display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:16px; margin-bottom:24px;}
+  .stub-head .label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .stub-head .month{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);}
+  .stub-row{
+    display:flex; justify-content:space-between; padding:7px 4px; font-size:14px; border-bottom:1px dotted #d9d2bd;
+    border-radius:2px; transition:background .2s ease, padding-left .2s ease;
+  }
+  .stub-row:hover{background:rgba(184,134,47,0.08); padding-left:10px;}
+  .stub-row.deduction .amt{color:var(--red);}
+  .stub-row .amt{font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .stub-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:16px; padding-top:16px; border-top:2px solid var(--ink);
+  }
+  .stub-total .t-label{font-family:'Roboto Slab',serif; font-size:14px; font-weight:600;}
+  .stub-total .t-amt{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:700; color:var(--green);}
+  .stub-total .t-sub{display:block; font-size:11px; color:var(--muted); font-weight:400; font-family:'Inter',sans-serif; margin-top:2px;}
+  .stamp{
+    position:absolute; right:22px; bottom:18px; width:70px; height:70px; border:2px solid var(--gold);
+    border-radius:50%; display:flex; align-items:center; justify-content:center; text-align:center;
+    transform:rotate(-12deg); opacity:.55; transition:transform .4s ease, opacity .4s ease;
+  }
+  .stub:hover .stamp{transform:rotate(0deg) scale(1.06); opacity:.8;}
+  .stamp span{font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--gold-deep); font-weight:700; letter-spacing:.05em; line-height:1.3;}
+
+  /* ===== Sections ===== */
+  section.tool{
+    max-width:1180px; margin:0 auto; padding:20px 24px 70px;
+    scroll-margin-top:80px;
+  }
+  .tool-head{margin-bottom:28px; padding-top:36px; border-top:1px solid var(--paper-line);}
+  .tool-head .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--gold-deep); text-transform:uppercase; letter-spacing:.1em;}
+  .tool-head h2{
+    font-size:28px; margin-top:8px; display:inline-block; position:relative; cursor:default;
+  }
+  .tool-head h2::after{
+    content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0; background:var(--gold);
+    transition:width .35s ease;
+  }
+  .tool-head:hover h2::after{width:100%;}
+  .tool-head p{color:var(--muted); max-width:60ch; margin-top:8px; font-size:14.5px;}
+
+  .panel{
+    background:var(--paper-2); border:1px solid var(--paper-line); border-radius:4px; padding:28px;
+    display:grid; grid-template-columns:1fr 1fr; gap:32px;
+    transition:box-shadow .3s ease, transform .3s ease;
+  }
+  .panel:hover{box-shadow:0 20px 44px -26px rgba(16,24,38,.4); transform:translateY(-2px);}
+  @media (max-width:820px){ .panel{grid-template-columns:1fr;} .hero{grid-template-columns:1fr;} }
+
+  .form-grid{display:grid; gap:16px;}
+  .form-field label{display:block; font-size:12.5px; font-family:'IBM Plex Mono',monospace; color:var(--muted); margin-bottom:6px;}
+  .form-field input[type=number], .form-field select{
+    width:100%; padding:11px 12px; border:1.5px solid var(--paper-line); border-radius:2px;
+    background:#fff; font-family:'IBM Plex Mono',monospace; font-size:14.5px; color:var(--text);
+  }
+  .form-field input:focus, .form-field select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .radio-row{display:flex; gap:16px; margin-top:4px;}
+  .radio-row label{display:flex; align-items:center; gap:6px; font-size:13.5px; font-family:'Inter',sans-serif; color:var(--text);}
+
+  .result-box{background:#fff; border:1px solid var(--paper-line); border-radius:3px; padding:20px;}
+  .result-row{
+    display:flex; justify-content:space-between; padding:8px 6px; font-size:14px; border-bottom:1px dotted #e2ddc9;
+    border-radius:2px; transition:background .2s ease, padding-left .2s ease;
+  }
+  .result-row:hover{background:#f4efdd; padding-left:12px;}
+  .result-row .v{font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .result-final{
+    margin-top:14px; padding-top:14px; border-top:2px solid var(--ink);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .result-final .v{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:700; color:var(--green);}
+  .badge{display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 8px; border-radius:10px; background:var(--green-bg); color:var(--green); margin-left:8px;}
+
+  /* compare table for tax tool */
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--paper-line); border-radius:3px; overflow:hidden; background:#fff;}
+  .compare .col{padding:18px;}
+  .compare .col.new{background:var(--green-bg);}
+  .compare .col + .col{border-left:1px solid var(--paper-line);}
+  .compare .col h4{font-family:'Roboto Slab',serif; font-size:14px; margin-bottom:12px;}
+  .compare .row{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; color:#3d3a30;}
+  .compare .row .v{font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .compare .final{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:700; margin-top:10px; padding-top:10px; border-top:1px solid var(--paper-line);}
+  .winner-strip{
+    grid-column:1/-1; background:var(--ink); color:#fff; padding:14px 18px;
+    font-family:'IBM Plex Mono',monospace; font-size:13.5px; display:flex; justify-content:space-between; align-items:center;
+  }
+  .winner-strip strong{color:var(--gold); font-weight:700;}
+
+  button.calc{
+    background:var(--ink); color:#fff; border:none; padding:12px 22px; font-family:'IBM Plex Mono',monospace;
+    font-size:13px; border-radius:2px; cursor:pointer; letter-spacing:.03em;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  button.calc:hover{background:var(--ink-soft); transform:translateY(-2px); box-shadow:0 10px 22px -10px rgba(16,24,38,.5);}
+  button.calc:active{transform:translateY(0); box-shadow:none;}
+
+  /* Ad slots */
+  .ad-slot{
+    max-width:1180px; margin:30px auto; padding:22px; border:1.5px dashed #b8ae8f; border-radius:4px;
+    text-align:center; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:12px;
+    background:repeating-linear-gradient(45deg, #f7f4ea, #f7f4ea 10px, #f2ede0 10px, #f2ede0 20px);
+    transition:border-color .25s ease, color .25s ease;
+  }
+  .ad-slot:hover{border-color:var(--gold); color:var(--gold-deep);}
+
+  /* Article / SEO content */
+  .article{max-width:820px; margin:0 auto; padding:20px 24px 60px;}
+  .article h2{font-size:24px; margin-bottom:14px; margin-top:36px;}
+  .article h3{font-size:17px; margin-bottom:8px; margin-top:22px;}
+  .article p{color:#3d3a30; font-size:14.5px; margin-bottom:12px;}
+  .article ul{color:#3d3a30; font-size:14.5px; padding-left:20px;}
+  .article li{margin-bottom:6px;}
+  .faq-item{border-bottom:1px solid var(--paper-line); padding:16px 0;}
+  .faq-item h3{margin:0 0 6px;}
+
+  footer{background:var(--ink); color:#a8a091; padding:36px 24px; font-size:12.5px;}
+  footer .foot-inner{max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px;}
+  footer a{color:#cfc9ba; text-decoration:none; border-bottom:1px solid transparent; transition:border-color .2s ease, color .2s ease;}
+  footer a:hover{color:var(--gold); border-color:var(--gold);}
+  .disclaimer{max-width:1180px; margin:0 auto 20px; padding:0 24px; font-size:11.5px; color:var(--muted); line-height:1.6;}
+
+  .section-hide{display:none;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="brand">
+    <div class="brand-mark">₹</div>
+    <div>
+      <div class="brand-name">SalaryKhata</div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-target="inhand" class="active">In-Hand</button>
+    <button data-target="hra">HRA</button>
+    <button data-target="tax">Tax (FY 25-26)</button>
+    <button data-target="sip">SIP</button>
+    <button data-target="emi">EMI</button>
+  </nav>
+</header>
+
+<!-- ================= HERO : IN-HAND STUB ================= -->
+<div class="hero" id="inhand">
+  <div class="hero-copy">
+    <span class="eyebrow">In-Hand Salary Calculator</span>
+    <h1>Apni CTC daalo,<br>asli salary dekho.</h1>
+    <p class="lead">CTC ka number HR deta hai, lekin bank account mein kitna aayega — wo koi nahi batata. Type karo aur payslip live update hote dekho.</p>
+
+    <div class="hero-input">
+      <label for="ctcInput">Annual CTC</label>
+      <div class="field-row">
+        <div class="rupee-field">
+          <span>₹</span>
+          <input type="number" id="ctcInput" value="900000" min="0" step="10000">
+        </div>
+        <div class="toggle-pill" id="cityToggle">
+          <button data-city="metro" class="active">Metro city</button>
+          <button data-city="nonmetro">Non-metro</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero-note">Basic ~40% of CTC, HRA 50%/40% (metro/non-metro), PF 12% of Basic, Gratuity 4.81% of Basic maana gaya hai — company-wise ye thoda alag ho sakta hai.</div>
+  </div>
+
+  <div class="stub-wrap">
+    <div class="stub">
+      <div class="stub-head">
+        <div>
+          <div class="label">Salary Slip</div>
+          <div style="font-family:'Roboto Slab',serif; font-size:16px; font-weight:600; margin-top:2px;">Take-Home Estimate</div>
+        </div>
+        <div class="month">Per Month</div>
+      </div>
+      <div class="stub-perf"></div>
+
+      <div class="stub-row"><span>Basic Salary</span><span class="amt mono" id="s-basic">₹0</span></div>
+      <div class="stub-row"><span>HRA</span><span class="amt mono" id="s-hra">₹0</span></div>
+      <div class="stub-row"><span>Special Allowance</span><span class="amt mono" id="s-special">₹0</span></div>
+      <div class="stub-row" style="border-bottom:2px solid #1B2230; font-weight:600;"><span>Gross Monthly</span><span class="amt mono" id="s-gross">₹0</span></div>
+      <div class="stub-row deduction"><span>Employee PF (12%)</span><span class="amt mono" id="s-pf">− ₹0</span></div>
+      <div class="stub-row deduction"><span>Professional Tax</span><span class="amt mono" id="s-pt">− ₹0</span></div>
+
+      <div class="stub-total">
+        <div class="t-label">Net In-Hand<span class="t-sub">per month, before income tax TDS</span></div>
+        <div class="t-amt mono" id="s-net">₹0</div>
+      </div>
+      <div class="stamp"><span>SALARY<br>KHATA</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="ad-slot">AD SLOT — Google AdSense unit yahan lagayenge (after approval)</div>
+
+<!-- ================= HRA TOOL ================= -->
+<section class="tool" id="hra">
+  <div class="tool-head">
+    <span class="kicker">Tool 02</span>
+    <h2>HRA Exemption Calculator</h2>
+    <p>House Rent Allowance ka kitna hissa tax-free hai — teeno rules ke hisaab se sabse chhota amount exempt hota hai (Old Tax Regime mein hi applicable).</p>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="hraBasic">Basic + DA (monthly)</label>
+        <input type="number" id="hraBasic" value="30000">
+      </div>
+      <div class="form-field">
+        <label for="hraReceived">HRA received (monthly)</label>
+        <input type="number" id="hraReceived" value="15000">
+      </div>
+      <div class="form-field">
+        <label for="hraRent">Rent paid (monthly)</label>
+        <input type="number" id="hraRent" value="16000">
+      </div>
+      <div class="form-field">
+        <label>City type</label>
+        <div class="radio-row">
+          <label><input type="radio" name="hraCity" value="metro" checked> Metro (Delhi/Mumbai/Kolkata/Chennai)</label>
+          <label><input type="radio" name="hraCity" value="nonmetro"> Non-metro</label>
+        </div>
+      </div>
+      <button class="calc" onclick="calcHRA()">Calculate exemption</button>
+    </div>
+    <div class="result-box" id="hraResultBox">
+      <div class="result-row"><span>Actual HRA received</span><span class="v" id="hra-r1">₹0</span></div>
+      <div class="result-row"><span>Rent paid − 10% of Basic+DA</span><span class="v" id="hra-r2">₹0</span></div>
+      <div class="result-row"><span>50%/40% of Basic+DA</span><span class="v" id="hra-r3">₹0</span></div>
+      <div class="result-final">
+        <span>Exempt HRA (monthly) <span class="badge">tax-free</span></span>
+        <span class="v" id="hra-exempt">₹0</span>
+      </div>
+      <div class="result-row" style="margin-top:10px;"><span>Taxable HRA (monthly)</span><span class="v" id="hra-taxable">₹0</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="ad-slot">AD SLOT — Google AdSense unit yahan lagayenge (after approval)</div>
+
+<!-- ================= TAX TOOL ================= -->
+<section class="tool" id="tax">
+  <div class="tool-head">
+    <span class="kicker">Tool 03 · Updated FY 2025-26</span>
+    <h2>Income Tax Calculator — Old vs New Regime</h2>
+    <p>Latest slabs ke hisaab se (Budget 2025): New regime mein ₹12 lakh tak taxable income par zero tax (Section 87A rebate). Dono regime compare karke better option chuno.</p>
+  </div>
+  <div class="panel" style="grid-template-columns:1fr;">
+    <div class="form-grid" style="grid-template-columns:repeat(2,1fr); display:grid;">
+      <div class="form-field">
+        <label for="taxSalary">Gross annual salary</label>
+        <input type="number" id="taxSalary" value="1200000">
+      </div>
+      <div class="form-field">
+        <label for="taxDeduct">Old regime deductions (80C + 80D + HRA exempt + home loan interest, etc — annual total)</label>
+        <input type="number" id="taxDeduct" value="150000">
+      </div>
+    </div>
+    <button class="calc" style="margin-top:16px; width:fit-content;" onclick="calcTax()">Compare regimes</button>
+
+    <div class="compare" style="margin-top:22px;">
+      <div class="col">
+        <h4>Old Regime</h4>
+        <div class="row"><span>Standard deduction</span><span class="v">₹50,000</span></div>
+        <div class="row"><span>Other deductions</span><span class="v" id="old-ded">₹0</span></div>
+        <div class="row"><span>Taxable income</span><span class="v" id="old-taxable">₹0</span></div>
+        <div class="row"><span>Tax before cess</span><span class="v" id="old-taxbefore">₹0</span></div>
+        <div class="row"><span>87A rebate</span><span class="v" id="old-rebate">₹0</span></div>
+        <div class="row"><span>Cess (4%)</span><span class="v" id="old-cess">₹0</span></div>
+        <div class="final" id="old-final">₹0</div>
+      </div>
+      <div class="col new">
+        <h4>New Regime (default)</h4>
+        <div class="row"><span>Standard deduction</span><span class="v">₹75,000</span></div>
+        <div class="row"><span>Other deductions</span><span class="v">₹0 (not allowed)</span></div>
+        <div class="row"><span>Taxable income</span><span class="v" id="new-taxable">₹0</span></div>
+        <div class="row"><span>Tax before cess</span><span class="v" id="new-taxbefore">₹0</span></div>
+        <div class="row"><span>87A rebate</span><span class="v" id="new-rebate">₹0</span></div>
+        <div class="row"><span>Cess (4%)</span><span class="v" id="new-cess">₹0</span></div>
+        <div class="final" id="new-final">₹0</div>
+      </div>
+      <div class="winner-strip" id="winnerStrip">Numbers daal kar "Compare regimes" dabao.</div>
+    </div>
+  </div>
+</section>
+
+<div class="ad-slot">AD SLOT — Google AdSense unit yahan lagayenge (after approval)</div>
+
+<!-- ================= SIP TOOL ================= -->
+<section class="tool" id="sip">
+  <div class="tool-head">
+    <span class="kicker">Tool 04</span>
+    <h2>SIP Calculator</h2>
+    <p>Har mahine mutual fund mein invest karoge to kitna corpus banega — compounding ka asar dekho.</p>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="sipAmount">Monthly investment</label>
+        <input type="number" id="sipAmount" value="5000">
+      </div>
+      <div class="form-field">
+        <label for="sipRate">Expected annual return (%)</label>
+        <input type="number" id="sipRate" value="12" step="0.5">
+      </div>
+      <div class="form-field">
+        <label for="sipYears">Time period (years)</label>
+        <input type="number" id="sipYears" value="10">
+      </div>
+      <button class="calc" onclick="calcSIP()">Calculate corpus</button>
+    </div>
+    <div class="result-box" id="sipResultBox">
+      <div class="result-row"><span>Total invested</span><span class="v" id="sip-invested">₹0</span></div>
+      <div class="result-row"><span>Estimated returns</span><span class="v" id="sip-returns">₹0</span></div>
+      <div class="result-final">
+        <span>Maturity value <span class="badge">estimate</span></span>
+        <span class="v" id="sip-final">₹0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ad-slot">AD SLOT — Google AdSense unit yahan lagayenge (after approval)</div>
+
+<!-- ================= EMI TOOL ================= -->
+<section class="tool" id="emi">
+  <div class="tool-head">
+    <span class="kicker">Tool 05</span>
+    <h2>EMI Calculator</h2>
+    <p>Loan (home, car, personal) ki monthly EMI aur total interest pata karo — apply karne se pehle budget plan karo.</p>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="emiPrincipal">Loan amount</label>
+        <input type="number" id="emiPrincipal" value="500000">
+      </div>
+      <div class="form-field">
+        <label for="emiRate">Interest rate (annual %)</label>
+        <input type="number" id="emiRate" value="9.5" step="0.1">
+      </div>
+      <div class="form-field">
+        <label for="emiTenure">Tenure (years)</label>
+        <input type="number" id="emiTenure" value="5">
+      </div>
+      <button class="calc" onclick="calcEMI()">Calculate EMI</button>
+    </div>
+    <div class="result-box" id="emiResultBox">
+      <div class="result-row"><span>Principal amount</span><span class="v" id="emi-principal">₹0</span></div>
+      <div class="result-row"><span>Total interest payable</span><span class="v" id="emi-interest">₹0</span></div>
+      <div class="result-row"><span>Total payment (P + I)</span><span class="v" id="emi-total">₹0</span></div>
+      <div class="result-final">
+        <span>Monthly EMI</span>
+        <span class="v" id="emi-final">₹0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ad-slot">AD SLOT — Google AdSense unit yahan lagayenge (after approval)</div>
+
+<!-- ================= SEO ARTICLE CONTENT ================= -->
+<div class="article">
+  <h2>In-hand salary, HRA aur income tax samajhna itna mushkil kyun hai?</h2>
+  <p>Jab offer letter mein CTC likha hota hai, wo pura number kabhi bank account mein nahi aata. Usme PF, gratuity, aur kai baar insurance jaisi cheezein already ghusi hoti hain jo aapko directly nahi milti. Yahi confusion sabse zyada freshers aur job-switchers ko hoti hai — is page ke teeno calculators isi gap ko fill karne ke liye bane hain.</p>
+
+  <h3>1. CTC aur In-Hand salary mein fark</h3>
+  <p>CTC (Cost to Company) mein Basic, HRA, Special Allowance ke saath-saath Employer ka PF contribution aur Gratuity bhi jud jaata hai — ye dono paisa aapko turant nahi milta. Isliye in-hand salary hamesha CTC se kam hoti hai, generally CTC ka 70-80% ke aas-paas.</p>
+
+  <h3>2. HRA exemption ka fayda kaise uthayein</h3>
+  <p>Agar aap rent pe rehte ho aur Old Tax Regime choose karte ho, to HRA ka ek hissa completely tax-free ho sakta hai. Exemption teen values mein se sabse chhoti value hoti hai — actual HRA, rent minus 10% basic, ya 50%/40% of basic. Landlord ka PAN dena zaroori hota hai agar annual rent ₹1 lakh se zyada hai.</p>
+
+  <h3>3. Old vs New Tax Regime — kaun better hai?</h3>
+  <p>FY 2025-26 se New Regime default hai aur ₹12 lakh tak taxable income par effectively zero tax lagta hai (87A rebate ki wajah se). Lekin agar aapke paas bade deductions hain — jaise home loan interest, 80C investments, ya high HRA — to Old Regime kabhi kabhi zyada fayda de sakta hai. Isi liye dono compare karna zaroori hai, sirf ek regime maan kar mat chalo.</p>
+
+  <div class="faq-item">
+    <h3>Kya ye calculator official Income Tax calculator ki jagah le sakta hai?</h3>
+    <p>Nahi. Ye ek quick estimate tool hai jo common assumptions (surcharge, marginal relief jaise complex cases chhod kar) use karta hai. Final ITR filing se pehle apne CA ya Income Tax Department ke official calculator se verify zaroor karein.</p>
+  </div>
+  <div class="faq-item">
+    <h3>PF aur gratuity ka % har company mein same hota hai?</h3>
+    <p>Employee PF generally 12% of Basic fixed hai, lekin kuch companies Basic ki definition alag rakhti hain, aur small companies mein PF apply hi nahi hota (agar employee count kam hai). Apni exact salary structure HR se confirm karein.</p>
+  </div>
+  <h3>4. SIP se long-term corpus kaise banta hai</h3>
+  <p>SIP (Systematic Investment Plan) mein har mahine chhoti amount invest karke, saalon mein compounding ka fayda milta hai. Jitna zyada time market mein rehta hai, utna zyada returns "returns par returns" ki wajah se badhte hain — isiliye jaldi shuru karna, amount se zyada matter karta hai.</p>
+
+  <h3>5. EMI lene se pehle kya dekhna chahiye</h3>
+  <p>Loan lene se pehle total interest payable zaroor check karein — kam tenure mein EMI zyada lagti hai but total interest kam jaata hai. Rule of thumb: total EMI (sab loans milakar) aapki in-hand salary ke 40% se zyada nahi honi chahiye.</p>
+
+  <div class="faq-item">
+    <h3>Professional tax kya hai?</h3>
+    <p>Ye state government ka tax hai jo kuch states mein lagta hai (Maharashtra, Karnataka, West Bengal, etc.) — amount state-wise alag hota hai, generally ₹200/month ke aas-paas. Kuch states (jaise Delhi, Haryana, UP) mein professional tax hai hi nahi.</p>
+  </div>
+</div>
+
+<div class="disclaimer">
+  Disclaimer: SalaryKhata educational aur estimation purposes ke liye hai. Ye tax, legal ya financial advice nahi hai. Surcharge (income &gt; ₹50L), marginal relief, aur company-specific salary structures is calculation mein include nahi hain. Filing se pehle qualified CA ya official incometax.gov.in calculator se confirm karein.
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div style="font-family:'Roboto Slab',serif; font-size:16px; color:#fff; margin-bottom:6px;">SalaryKhata</div>
+      <div>Har mahine ki salary, ek jagah samjho.</div>
+    </div>
+    <div>© 2026 SalaryKhata · For informational use only</div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Tab / scroll nav ----------
+  document.querySelectorAll('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  function fmt(n){
+    n = Math.round(n);
+    if(isNaN(n)) n = 0;
+    let sign = n<0 ? "-" : "";
+    n = Math.abs(n);
+    let str = n.toString();
+    let lastThree = str.substring(str.length-3);
+    let other = str.substring(0,str.length-3);
+    if(other !== '') lastThree = ',' + lastThree;
+    let formatted = other.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    return sign + "₹" + formatted;
+  }
+
+  // ---------- IN-HAND STUB ----------
+  let city = 'metro';
+  const ctcInput = document.getElementById('ctcInput');
+  document.querySelectorAll('#cityToggle button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#cityToggle button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      city = b.dataset.city;
+      updateStub();
+    });
+  });
+  ctcInput.addEventListener('input', updateStub);
+
+  function updateStub(){
+    let ctc = parseFloat(ctcInput.value) || 0;
+    let basicAnnual = ctc * 0.40;
+    let hraPct = city === 'metro' ? 0.50 : 0.40;
+    let hraAnnual = basicAnnual * hraPct;
+    let employerPF = basicAnnual * 0.12;
+    let gratuity = basicAnnual * 0.0481;
+    let specialAnnual = Math.max(ctc - basicAnnual - hraAnnual - employerPF - gratuity, 0);
+
+    let basicM = basicAnnual/12, hraM = hraAnnual/12, specialM = specialAnnual/12;
+    let grossM = basicM + hraM + specialM;
+    let employeePF = basicM * 0.12;
+    let profTax = 200;
+    let netM = grossM - employeePF - profTax;
+
+    document.getElementById('s-basic').textContent = fmt(basicM);
+    document.getElementById('s-hra').textContent = fmt(hraM);
+    document.getElementById('s-special').textContent = fmt(specialM);
+    document.getElementById('s-gross').textContent = fmt(grossM);
+    document.getElementById('s-pf').textContent = "− " + fmt(employeePF);
+    document.getElementById('s-pt').textContent = "− " + fmt(profTax);
+    document.getElementById('s-net').textContent = fmt(netM);
+  }
+  updateStub();
+
+  // ---------- HRA ----------
+  function calcHRA(){
+    let basic = parseFloat(document.getElementById('hraBasic').value) || 0;
+    let hraRec = parseFloat(document.getElementById('hraReceived').value) || 0;
+    let rent = parseFloat(document.getElementById('hraRent').value) || 0;
+    let isMetro = document.querySelector('input[name=hraCity]:checked').value === 'metro';
+
+    let r1 = hraRec;
+    let r2 = Math.max(rent - 0.10*basic, 0);
+    let r3 = basic * (isMetro ? 0.50 : 0.40);
+    let exempt = Math.min(r1, r2, r3);
+    let taxable = Math.max(hraRec - exempt, 0);
+
+    document.getElementById('hra-r1').textContent = fmt(r1);
+    document.getElementById('hra-r2').textContent = fmt(r2);
+    document.getElementById('hra-r3').textContent = fmt(r3);
+    document.getElementById('hra-exempt').textContent = fmt(exempt);
+    document.getElementById('hra-taxable').textContent = fmt(taxable);
+  }
+  calcHRA();
+
+  // ---------- TAX (FY 2025-26) ----------
+  function slabTaxNew(ti){
+    // New regime slabs FY 2025-26
+    const slabs = [
+      [0,400000,0],[400000,800000,0.05],[800000,1200000,0.10],
+      [1200000,1600000,0.15],[1600000,2000000,0.20],[2000000,2400000,0.25],[2400000,Infinity,0.30]
+    ];
+    let tax=0;
+    for(const [lo,hi,rate] of slabs){
+      if(ti>lo){ tax += (Math.min(ti,hi)-lo)*rate; }
+    }
+    return tax;
+  }
+  function slabTaxOld(ti){
+    const slabs = [
+      [0,250000,0],[250000,500000,0.05],[500000,1000000,0.20],[1000000,Infinity,0.30]
+    ];
+    let tax=0;
+    for(const [lo,hi,rate] of slabs){
+      if(ti>lo){ tax += (Math.min(ti,hi)-lo)*rate; }
+    }
+    return tax;
+  }
+
+  function calcTax(){
+    let salary = parseFloat(document.getElementById('taxSalary').value) || 0;
+    let otherDed = parseFloat(document.getElementById('taxDeduct').value) || 0;
+
+    // OLD REGIME
+    let oldStd = 50000;
+    let oldTaxable = Math.max(salary - oldStd - otherDed, 0);
+    let oldTaxBefore = slabTaxOld(oldTaxable);
+    let oldRebate = oldTaxable <= 500000 ? Math.min(oldTaxBefore, 12500) : 0;
+    let oldAfterRebate = Math.max(oldTaxBefore - oldRebate, 0);
+    let oldCess = oldAfterRebate * 0.04;
+    let oldFinal = oldAfterRebate + oldCess;
+
+    // NEW REGIME
+    let newStd = 75000;
+    let newTaxable = Math.max(salary - newStd, 0);
+    let newTaxBefore = slabTaxNew(newTaxable);
+    let newRebate = newTaxable <= 1200000 ? Math.min(newTaxBefore, 60000) : 0;
+    let newAfterRebate = Math.max(newTaxBefore - newRebate, 0);
+    let newCess = newAfterRebate * 0.04;
+    let newFinal = newAfterRebate + newCess;
+
+    document.getElementById('old-ded').textContent = fmt(otherDed);
+    document.getElementById('old-taxable').textContent = fmt(oldTaxable);
+    document.getElementById('old-taxbefore').textContent = fmt(oldTaxBefore);
+    document.getElementById('old-rebate').textContent = "− " + fmt(oldRebate);
+    document.getElementById('old-cess').textContent = fmt(oldCess);
+    document.getElementById('old-final').textContent = fmt(oldFinal);
+
+    document.getElementById('new-taxable').textContent = fmt(newTaxable);
+    document.getElementById('new-taxbefore').textContent = fmt(newTaxBefore);
+    document.getElementById('new-rebate').textContent = "− " + fmt(newRebate);
+    document.getElementById('new-cess').textContent = fmt(newCess);
+    document.getElementById('new-final').textContent = fmt(newFinal);
+
+    let strip = document.getElementById('winnerStrip');
+    if(newFinal < oldFinal){
+      strip.innerHTML = `<span>New Regime better hai</span><strong>Aap ${fmt(oldFinal-newFinal)} bachate ho</strong>`;
+    } else if(oldFinal < newFinal){
+      strip.innerHTML = `<span>Old Regime better hai (deductions ki wajah se)</span><strong>Aap ${fmt(newFinal-oldFinal)} bachate ho</strong>`;
+    } else {
+      strip.innerHTML = `<span>Dono regime mein tax barabar hai</span><strong>${fmt(oldFinal)}</strong>`;
+    }
+  }
+  calcTax();
+
+  // ---------- SIP ----------
+  function calcSIP(){
+    let monthly = parseFloat(document.getElementById('sipAmount').value) || 0;
+    let annualRate = parseFloat(document.getElementById('sipRate').value) || 0;
+    let years = parseFloat(document.getElementById('sipYears').value) || 0;
+    let n = years * 12;
+    let i = annualRate / 100 / 12;
+
+    let futureValue;
+    if(i === 0){
+      futureValue = monthly * n;
+    } else {
+      futureValue = monthly * ((Math.pow(1+i, n) - 1) / i) * (1+i);
+    }
+    let invested = monthly * n;
+    let returns = futureValue - invested;
+
+    document.getElementById('sip-invested').textContent = fmt(invested);
+    document.getElementById('sip-returns').textContent = fmt(returns);
+    document.getElementById('sip-final').textContent = fmt(futureValue);
+  }
+  calcSIP();
+
+  // ---------- EMI ----------
+  function calcEMI(){
+    let P = parseFloat(document.getElementById('emiPrincipal').value) || 0;
+    let annualRate = parseFloat(document.getElementById('emiRate').value) || 0;
+    let years = parseFloat(document.getElementById('emiTenure').value) || 0;
+    let n = years * 12;
+    let r = annualRate / 100 / 12;
+
+    let emi;
+    if(r === 0){
+      emi = n > 0 ? P / n : 0;
+    } else {
+      emi = (P * r * Math.pow(1+r, n)) / (Math.pow(1+r, n) - 1);
+    }
+    let totalPayment = emi * n;
+    let totalInterest = totalPayment - P;
+
+    document.getElementById('emi-principal').textContent = fmt(P);
+    document.getElementById('emi-interest').textContent = fmt(totalInterest);
+    document.getElementById('emi-total').textContent = fmt(totalPayment);
+    document.getElementById('emi-final').textContent = fmt(emi);
+  }
+  calcEMI();
+</script>
+</body>
+</html>
